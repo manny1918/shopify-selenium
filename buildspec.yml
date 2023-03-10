@@ -1,0 +1,33 @@
+version: 0.2
+env:
+  variables:
+    APP_TARGET_URL: http://localhost:4444
+    SELENIUM_SERVER_URL: "http://localhost:4444/wd/hub"
+    SELENIUM_BROWSER: "chrome"
+phases:
+  install:
+    runtime-versions:
+      docker: 20
+      nodejs: 16
+    commands:
+      # - docker pull selenium/standalone-chrome
+      - docker pull selenium/standalone-chrome:latest
+      - npm install
+  pre_build:
+    commands:
+      - docker run -d -p 4444:4444 -v /dev/shm:/dev/shm --name selenium selenium/standalone-chrome:latest
+      - docker exec -u 0 selenium /bin/bash -c 'apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*'
+      - docker exec -d selenium ffmpeg -video_size 1360x1020 -framerate 15 -f x11grab -i :99.0 -vf format=yuv420p /home/seluser/recording.mp4
+  build:
+    commands:
+      - |
+        SELENIUM_SERVER_URL="http://localhost:4444/wd/hub" \
+        SELENIUM_BROWSER="chrome" \
+        npm run test
+  post_build:
+    commands:
+      - docker exec selenium pgrep ffmpeg > pidfile
+      - docker exec selenium kill -INT $(cat pidfile)
+      - docker exec selenium /bin/bash -c "while \$(kill -0 $(cat pidfile) 2>/dev/null); do sleep 1; done"
+      - aws s3 sync allure-report s3://shopify-test-automation/
+      - aws s3 cp --recursive --acl public-read s3://shopify-test-automation/ s3://shopify-test-automation/ --metadata-directive REPLACE

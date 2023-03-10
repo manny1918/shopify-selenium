@@ -1,0 +1,49 @@
+{
+  "name": "shopify-test-automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "clear-test-report": "rimraf ./allure-report &&rimraf ./allure-results",
+    "generate-report": "allure generate allure-results --clean -o allure-report",
+    "open-report": "allure open allure-report",
+    "run": "mocha ./tests/*/clean-shopify.js --reporter mochawesome --require mochawesome/register,mocha-steps --no-timeouts --parallel --retry 1",
+    "report": "allure generate allure-results --clean -o allure-report && allure open allure-report",
+    "mocha": "npm run clear-test-report && npm run run; npm run report",
+    "test": "npm run clear-test-report && npm run run; npm run generate-report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.clickbank.io:Engineering/shopify-test-automation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "allure-commandline": "^2.20.1",
+    "allure-js-commons": "^2.0.0-beta.21",
+    "allure-mocha": "^2.0.0-beta.20",
+    "chai": "^4.3.7",
+    "chromedriver": "^108.0.0",
+    "eslint": "^8.30.0",
+    "good-mocha-html-reporter": "^2.0.1",
+    "jasmine": "^4.5.0",
+    "mocha": "^10.2.0",
+    "mocha-allure-reporter": "^1.4.0",
+    "mocha-multi-reporters": "^1.5.1",
+    "mocha-silent-reporter": "^1.0.0",
+    "mocha-steps": "^1.3.0",
+    "mochawesome": "^7.1.3",
+    "moment": "^2.29.4",
+    "selenium-webdriver": "^4.6.1",
+    "source-map-support": "^0.5.21"
+  },
+  "dependencies": {
+    "axios": "^1.3.2",
+    "mocha-logger": "^1.0.8",
+    "simple-node-logger": "^21.8.12"
+  }
+}

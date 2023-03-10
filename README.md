@@ -1,1 +1,1 @@
-# shopify-selenium
+# shopify-test-automation
